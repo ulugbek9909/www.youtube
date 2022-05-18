@@ -1,11 +1,9 @@
 package com.company.validator;
 
 import com.company.annotation.ValidEmail;
-import com.company.exception.AppBadRequestException;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
