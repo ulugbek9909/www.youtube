@@ -10,18 +10,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
-public interface PlaylistRepository extends JpaRepository<PlaylistEntity, UUID> {
+public interface PlaylistRepository extends JpaRepository<PlaylistEntity, Integer> {
 
     @Transactional
     @Modifying
     @Query("update PlaylistEntity set status = :status where id = :id")
-    int updateStatus(@Param("status") PlaylistStatus status, @Param("id") UUID id);
+    void updateStatus(@Param("status") PlaylistStatus status, @Param("id") Integer id);
 
-    List<PlaylistEntity> findAllByChannelIdAndStatus(UUID id, PlaylistStatus status, Sort sort);
+    List<PlaylistEntity> findAllByChannelIdAndStatus(Integer id, PlaylistStatus status, Sort sort);
 
     @Query("from PlaylistEntity where channel.profileId = :profileId")
-    List<PlaylistEntity> findAllByProfileId(@Param("profileId") UUID profileId, Sort sort);
+    List<PlaylistEntity> findAllByProfileId(@Param("profileId") Integer profileId, Sort sort);
 
 }

@@ -1,9 +1,5 @@
 package com.company.dto;
 
-import com.company.dto.AttachDTO;
-import com.company.dto.BaseDTO;
-import com.company.dto.CategoryDTO;
-import com.company.dto.ChannelDTO;
 import com.company.enums.VideoStatus;
 import com.company.enums.VideoType;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,12 +8,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -33,15 +27,15 @@ public class VideoDTO extends BaseDTO {
     private String description;
 
     @NotBlank(message = "CategoryId required")
-    private String categoryId;
+    private Integer categoryId;
     private CategoryDTO category;
 
     @NotBlank(message = "ChannelId required")
-    private String channelId;
+    private Integer channelId;
     private ChannelDTO channel;
 
     @NotBlank(message = "VideoId required")
-    private String videoId;
+    private Integer videoId;
     private AttachDTO video;
 
     private AttachDTO previewPhoto;
@@ -68,7 +62,7 @@ public class VideoDTO extends BaseDTO {
         this.url = url;
     }
 
-    public VideoDTO(String id,String title, String description, AttachDTO video, Long duration) {
+    public VideoDTO(Integer id,String title, String description, AttachDTO video, Long duration) {
         super.id = id;
         this.title = title;
         this.description = description;

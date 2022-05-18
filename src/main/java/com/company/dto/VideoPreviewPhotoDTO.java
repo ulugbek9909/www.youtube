@@ -14,6 +14,6 @@ import javax.validation.constraints.NotBlank;
 public class VideoPreviewPhotoDTO {
 
     @NotBlank(message = "PhotoId required")
-    private String photoId;
+    private Integer photoId;
 
 }

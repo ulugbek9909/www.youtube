@@ -7,7 +7,6 @@ import com.company.exception.AppForbiddenException;
 import com.company.exception.TokenNotValidException;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -54,11 +53,11 @@ public class JwtUtil {
 
             jwtParser.setSigningKey(secretKey);
 
-            Jws jws = jwtParser.parseClaimsJws(jwt);
+            Jws<Claims> jws = jwtParser.parseClaimsJws(jwt);
 
-            Claims claims = (Claims) jws.getBody();
+            Claims claims = jws.getBody();
 
-            String id = claims.getSubject();
+            Integer id = Integer.valueOf(claims.getSubject());
             String role = String.valueOf(claims.get("role"));
             String email = String.valueOf(claims.get("email"));
 
@@ -69,16 +68,16 @@ public class JwtUtil {
         }
     }
 
-    public static String decodeAndGetId(String jwt) {
+    public static Integer decodeAndGetId(String jwt) {
         try {
             JwtParser jwtParser = Jwts.parser();
 
             jwtParser.setSigningKey(secretKey);
-            Jws jws = jwtParser.parseClaimsJws(jwt);
+            Jws<Claims> jws = jwtParser.parseClaimsJws(jwt);
 
-            Claims claims = (Claims) jws.getBody();
+            Claims claims = jws.getBody();
 
-            return claims.getSubject();
+            return Integer.valueOf(claims.getSubject());
         } catch (JwtException e) {
             log.warn("JWT invalid {}", jwt);
             throw new AppBadRequestException("JWT invalid!");
@@ -86,7 +85,7 @@ public class JwtUtil {
     }
 
 
-    public static String getIdFromHeader(HttpServletRequest request, ProfileRole... requiredRoles) {
+    public static Integer getIdFromHeader(HttpServletRequest request, ProfileRole... requiredRoles) {
         try {
             ProfileJwtDTO dto = (ProfileJwtDTO) request.getAttribute("profileJwtDTO");
             if (requiredRoles == null || requiredRoles.length == 0) {

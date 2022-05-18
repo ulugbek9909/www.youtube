@@ -2,25 +2,21 @@ package com.company.service;
 
 import com.company.dto.ProfileDTO;
 import com.company.dto.VideoDTO;
+import com.company.dto.VideoLikeDTO;
 import com.company.entity.ProfileEntity;
 import com.company.entity.VideoEntity;
-import com.company.dto.VideoLikeDTO;
 import com.company.entity.VideoLikeEntity;
 import com.company.exception.AppForbiddenException;
 import com.company.exception.ItemNotFoundException;
-import com.company.mapper.LikeCountSimpleMapper;
-import com.company.mapper.ProfileLikesSimpleMapper;
 import com.company.repository.VideoLikeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -32,7 +28,7 @@ public class VideoLikeService {
     private final VideoService videoService;
 
 
-    public VideoLikeDTO create(VideoLikeDTO dto, String profileId) {
+    public VideoLikeDTO create(VideoLikeDTO dto, Integer profileId) {
         ProfileEntity profileEntity = profileService.getById(profileId);
 
         VideoEntity videoEntity = videoService.getById(dto.getVideoId());
@@ -56,10 +52,10 @@ public class VideoLikeService {
         return toDTO(entity);
     }
 
-    public Boolean delete(String likeId, String profileId) {
+    public Boolean delete(Integer likeId, Integer profileId) {
         VideoLikeEntity entity = getById(likeId);
 
-        if (!entity.getProfileId().toString().equals(profileId)) {
+        if (!entity.getProfileId().equals(profileId)) {
             log.warn("Not access {}", profileId);
             throw new AppForbiddenException("Not access!");
         }
@@ -68,7 +64,7 @@ public class VideoLikeService {
         return true;
     }
 
-    public PageImpl<VideoLikeDTO> getByProfileLikedVideo(int page, int size, String profileId) {
+    public PageImpl<VideoLikeDTO> getByProfileLikedVideo(int page, int size, Integer profileId) {
         ProfileEntity profileEntity = profileService.getById(profileId);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
@@ -77,13 +73,11 @@ public class VideoLikeService {
 
         Page<VideoLikeEntity> entityPage = videoLikeRepository.findAllByProfileId(profileEntity.getId(), pageable);
 
-        entityPage.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
+        entityPage.forEach(entity -> dtoList.add(toDTO(entity)));
         return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
     }
 
-    public VideoLikeDTO get(String videoId, String profileId) {
+    public VideoLikeDTO get(Integer videoId, Integer profileId) {
         ProfileEntity profileEntity = profileService.getById(profileId);
 
         VideoEntity videoEntity = videoService.getById(videoId);
@@ -98,8 +92,8 @@ public class VideoLikeService {
     }
 
 
-    public VideoLikeEntity getById(String id) {
-        return videoLikeRepository.findById(UUID.fromString(id))
+    public VideoLikeEntity getById(Integer id) {
+        return videoLikeRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Not found {}", id);
                     return new ItemNotFoundException("Not found!");
@@ -108,9 +102,9 @@ public class VideoLikeService {
 
     public VideoLikeDTO toDTO(VideoLikeEntity entity) {
         VideoLikeDTO dto = new VideoLikeDTO();
-        dto.setId(entity.getId().toString());
+        dto.setId(entity.getId());
         dto.setVideo(new VideoDTO(videoService.toOpenUrl(entity.getVideoId().toString())));
-        dto.setProfile(new ProfileDTO(profileService.toOpenUrl(entity.getProfileId().toString())));
+        dto.setProfile(new ProfileDTO(profileService.toOpenUrl(entity.getProfileId())));
         dto.setType(entity.getType());
         return dto;
     }

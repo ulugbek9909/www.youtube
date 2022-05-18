@@ -24,13 +24,9 @@ public class PlaylistVideoController {
 
     private final PlaylistVideoService playlistVideoService;
 
-    /**
-     * PUBLIC
-     */
-
     @ApiOperation(value = "Get", notes = "Method used for get playlist video info")
     @GetMapping("/{playlistVideoId}")
-    public ResponseEntity<?> get(@PathVariable("playlistVideoId") String playlistVideoId) {
+    public ResponseEntity<?> get(@PathVariable("playlistVideoId") Integer playlistVideoId) {
         log.info("/{playlistVideoId} {}", playlistVideoId);
         return ResponseEntity.ok(playlistVideoService.get(playlistVideoId));
     }
@@ -48,7 +44,7 @@ public class PlaylistVideoController {
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/{playlistVideoId}")
     public ResponseEntity<?> update(@RequestBody @Valid UpdateOrderNumDTO dto,
-                                    @PathVariable("playlistVideoId") String playlistVideoId,
+                                    @PathVariable("playlistVideoId") Integer playlistVideoId,
                                     HttpServletRequest request) {
         log.info("/public/{playlistVideoId} {}", dto);
         return ResponseEntity.ok(playlistVideoService.update(dto, playlistVideoId, JwtUtil.getIdFromHeader(request)));
@@ -65,7 +61,7 @@ public class PlaylistVideoController {
 
     @ApiOperation(value = "Videos By Playlist", notes = "Method used for get videos by playlist")
     @GetMapping("/list/{playlistVideoId}")
-    public ResponseEntity<?> videosByPlaylistId(@PathVariable("playlistVideoId") String playlistVideoId) {
+    public ResponseEntity<?> videosByPlaylistId(@PathVariable("playlistVideoId") Integer playlistVideoId) {
         log.info("LIST {}", playlistVideoId);
         return ResponseEntity.ok(playlistVideoService.videosByPlaylistId(playlistVideoId));
     }

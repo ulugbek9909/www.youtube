@@ -24,9 +24,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
         List<String> errors = new LinkedList<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.add(error.getDefaultMessage());
-        });
+        ex.getBindingResult().getFieldErrors().forEach(error -> errors.add(error.getDefaultMessage()));
 
         body.put("errors", errors);
         return new ResponseEntity<>(body, headers, status);

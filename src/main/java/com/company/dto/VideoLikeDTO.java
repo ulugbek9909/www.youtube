@@ -1,9 +1,5 @@
 package com.company.dto;
 
-import com.company.dto.BaseDTO;
-import com.company.dto.ChannelDTO;
-import com.company.dto.ProfileDTO;
-import com.company.dto.VideoDTO;
 import com.company.enums.LikeType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -13,8 +9,6 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -23,11 +17,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class VideoLikeDTO extends BaseDTO {
 
-    private String profileId;
+    private Integer profileId;
     private ProfileDTO profile;
 
     @NotBlank(message = "VideoId required")
-    private String videoId;
+    private Integer videoId;
     private VideoDTO video;
 
     @NotNull(message = "Type not be null")

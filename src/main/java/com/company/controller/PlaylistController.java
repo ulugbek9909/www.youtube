@@ -24,13 +24,9 @@ public class PlaylistController {
 
     private final PlaylistService playlistService;
 
-    /**
-     * PUBLIC
-     */
-
     @ApiOperation(value = "Get", notes = "Method used for get playlist info")
     @GetMapping("/{playlistId}")
-    public ResponseEntity<?> get(@PathVariable("playlistId") String playlistId) {
+    public ResponseEntity<?> get(@PathVariable("playlistId") Integer playlistId) {
         log.info("/{playlistId} {}", playlistId);
         return ResponseEntity.ok(playlistService.get(playlistId));
     }
@@ -39,7 +35,7 @@ public class PlaylistController {
             authorizations = @Authorization(value = "JWT Token"))
     @PostMapping("public/{channelId}")
     public ResponseEntity<?> create(@RequestBody @Valid PlaylistDTO dto,
-                                    @PathVariable("channelId") String channelId,
+                                    @PathVariable("channelId") Integer channelId,
                                     HttpServletRequest request) {
         log.info("CREATE {}", dto);
         return ResponseEntity.ok(playlistService.create(dto, channelId, JwtUtil.getIdFromHeader(request)));
@@ -49,7 +45,7 @@ public class PlaylistController {
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/{playlistId}")
     public ResponseEntity<?> updateAbout(@RequestBody @Valid PlaylistAboutDTO dto,
-                                         @PathVariable("playlistId") String playlistId,
+                                         @PathVariable("playlistId") Integer playlistId,
                                          HttpServletRequest request) {
         log.info("UPDATE about {}", dto);
         return ResponseEntity.ok(playlistService.updateAbout(dto, playlistId, JwtUtil.getIdFromHeader(request)));
@@ -57,7 +53,7 @@ public class PlaylistController {
 
     @ApiOperation(value = "Channel Playlist", notes = "Method used for get channel's playlists")
     @GetMapping("/public/list/{channelId}")
-    public ResponseEntity<?> channelPlaylist(@PathVariable("channelId") String channelId) {
+    public ResponseEntity<?> channelPlaylist(@PathVariable("channelId") Integer channelId) {
         log.info("/public/list/{channelId} {}", channelId);
         return ResponseEntity.ok(playlistService.channelPlaylist(channelId));
     }
@@ -65,28 +61,20 @@ public class PlaylistController {
     @ApiOperation(value = "Delete", notes = "Method used for delete playlist only owner delete own playlists",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/public/{playlistId}/delete")
-    public ResponseEntity<?> delete(@PathVariable("playlistId") String playlistId,
+    public ResponseEntity<?> delete(@PathVariable("playlistId") Integer playlistId,
                                     HttpServletRequest request) {
         log.info("/public/{playlistId}/delete {}", playlistId);
         return ResponseEntity.ok(playlistService.delete(playlistId, JwtUtil.getIdFromHeader(request)));
     }
 
-    /**
-     * ADMIN AND USER(OWNER)
-     */
-
     @ApiOperation(value = "Change Status", notes = "Method used for change playlist's status with admin or owner",
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/status/{playlistId}")
-    public ResponseEntity<?> changeStatus(@PathVariable("playlistId") String playlistId,
+    public ResponseEntity<?> changeStatus(@PathVariable("playlistId") Integer playlistId,
                                           HttpServletRequest request) {
         log.info("/public/status/{playlistId} {}", playlistId);
         return ResponseEntity.ok(playlistService.changeStatus(playlistId, JwtUtil.getIdFromHeader(request)));
     }
-
-    /**
-     * ADMIN
-     */
 
     @ApiOperation(value = "List", notes = "Method used for get list of playlists",
             authorizations = @Authorization(value = "JWT Token"))
@@ -102,7 +90,7 @@ public class PlaylistController {
     @ApiOperation(value = "Profile's Playlist", notes = "Method used for get profile's playlists",
             authorizations = @Authorization(value = "JWT Token"))
     @GetMapping("/adm/{profileId}/list")
-    public ResponseEntity<?> profilePlaylist(@PathVariable("profileId") String profileId,
+    public ResponseEntity<?> profilePlaylist(@PathVariable("profileId") Integer profileId,
                                              HttpServletRequest request) {
         log.info("/adm/{profileId}/list {}", profileId);
         JwtUtil.getIdFromHeader(request, ProfileRole.ADMIN);

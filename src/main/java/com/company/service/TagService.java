@@ -2,14 +2,11 @@ package com.company.service;
 
 import com.company.dto.TagDTO;
 import com.company.entity.TagEntity;
-import com.company.enums.ProfileRole;
 import com.company.exception.AppBadRequestException;
-import com.company.exception.AppForbiddenException;
 import com.company.exception.ItemNotFoundException;
 import com.company.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -47,14 +43,12 @@ public class TagService {
         List<TagDTO> dtoList = new ArrayList<>();
 
         Page<TagEntity> entityPage = tagRepository.findAll(pageable);
-        entityPage.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
+        entityPage.forEach(entity -> dtoList.add(toDTO(entity)));
 
         return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
     }
 
-    public TagDTO update(String id, TagDTO dto) {
+    public TagDTO update(Integer id, TagDTO dto) {
         TagEntity entity = get(id);
         entity.setName("#" + dto.getName());
         entity.setUpdatedDate(LocalDateTime.now());
@@ -69,14 +63,14 @@ public class TagService {
 
     }
 
-    public Boolean delete(String id) {
+    public Boolean delete(Integer id) {
         TagEntity entity = get(id);
         tagRepository.delete(entity);
         return true;
     }
 
-    public TagEntity get(String id) {
-        return tagRepository.findById(UUID.fromString(id))
+    public TagEntity get(Integer id) {
+        return tagRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Not found {}", id);
                     return new ItemNotFoundException("Not Found!");
@@ -85,7 +79,7 @@ public class TagService {
 
     public TagDTO toDTO(TagEntity entity) {
         TagDTO dto = new TagDTO();
-        dto.setId(entity.getId().toString());
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setUpdatedDate(entity.getUpdatedDate());
         dto.setCreatedDate(entity.getCreatedDate());

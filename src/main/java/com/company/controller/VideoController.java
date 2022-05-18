@@ -1,6 +1,5 @@
 package com.company.controller;
 
-import com.company.dto.AttachDTO;
 import com.company.dto.VideoAboutDTO;
 import com.company.dto.VideoDTO;
 import com.company.dto.VideoPreviewPhotoDTO;
@@ -27,14 +26,10 @@ public class VideoController {
 
     private final VideoService videoService;
 
-    /**
-     * PUBLIC
-     */
-
     @ApiOperation(value = "Get", notes = "Method used for get video",
             authorizations = @Authorization(value = "JWT Token"))
     @GetMapping("/public/{videoId}")
-    public ResponseEntity<?> get(@PathVariable("videoId") String videoId,
+    public ResponseEntity<?> get(@PathVariable("videoId") Integer videoId,
                                  HttpServletRequest request) {
         log.info("/public/{videoId} {}", videoId);
         return ResponseEntity.ok(videoService.get(videoId, JwtUtil.getIdFromHeader(request)));
@@ -53,7 +48,7 @@ public class VideoController {
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/{videoId}")
     public ResponseEntity<?> updateAbout(@RequestBody @Valid VideoAboutDTO dto,
-                                         @PathVariable("videoId") String videoId,
+                                         @PathVariable("videoId") Integer videoId,
                                          HttpServletRequest request) {
         log.info("UPDATE about {}", dto);
         return ResponseEntity.ok(videoService.updateAbout(dto, videoId, JwtUtil.getIdFromHeader(request)));
@@ -68,7 +63,7 @@ public class VideoController {
 
     @ApiOperation(value = "Increase View Count", notes = "Method used for increase video count")
     @PutMapping("/view/{videoId}")
-    public ResponseEntity<?> increaseViewCount(@PathVariable("videoId") String videoId) {
+    public ResponseEntity<?> increaseViewCount(@PathVariable("videoId") Integer videoId) {
         log.info("/view/{videoId} {}", videoId);
         videoService.updateViewCount(videoId);
         return ResponseEntity.ok().build();
@@ -77,7 +72,7 @@ public class VideoController {
     @ApiOperation(value = "Delete", notes = "Method used for delete video only owner delete own videos",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/public/{videoId}/delete")
-    public ResponseEntity<?> delete(@PathVariable("videoId") String videoId,
+    public ResponseEntity<?> delete(@PathVariable("videoId") Integer videoId,
                                     HttpServletRequest request) {
         log.info("/public/{videoId}/delete {}", videoId);
         return ResponseEntity.ok(videoService.delete(videoId, JwtUtil.getIdFromHeader(request)));
@@ -87,7 +82,7 @@ public class VideoController {
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<?> paginationByCategoryId(@RequestParam(value = "page", defaultValue = "0") int page,
                                                     @RequestParam(value = "size", defaultValue = "5") int size,
-                                                    @PathVariable("categoryId") String categoryId) {
+                                                    @PathVariable("categoryId") Integer categoryId) {
         log.info("/category/{categoryId} category={} page={} size={}", categoryId, page, size);
         return ResponseEntity.ok(videoService.paginationByCategoryId(page, size, categoryId));
     }
@@ -96,7 +91,7 @@ public class VideoController {
     @GetMapping("/channel/{channelId}")
     public ResponseEntity<?> paginationByChannelId(@RequestParam(value = "page", defaultValue = "0") int page,
                                                    @RequestParam(value = "size", defaultValue = "5") int size,
-                                                   @PathVariable("channelId") String channelId) {
+                                                   @PathVariable("channelId") Integer channelId) {
         log.info("/channel/{channelId} channel={} page={} size={}", channelId, page, size);
         return ResponseEntity.ok(videoService.paginationByChannelId(page, size, channelId));
     }
@@ -105,28 +100,20 @@ public class VideoController {
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/preview-photo/{videoId}")
     public ResponseEntity<?> updatePreviewPhoto(@RequestBody @Valid VideoPreviewPhotoDTO dto,
-                                          @PathVariable("videoId") String videoId,
+                                          @PathVariable("videoId") Integer videoId,
                                           HttpServletRequest request) {
         log.info("/public/preview-photo/{videoId} {}", dto);
         return ResponseEntity.ok(videoService.updatePreviewPhoto(dto, videoId, JwtUtil.getIdFromHeader(request)));
     }
 
-    /**
-     * ADMIN AND USER(OWNER)
-     */
-
     @ApiOperation(value = "Change Status", notes = "Method used for change video's status with admin or owner",
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/status/{videoId}")
-    public ResponseEntity<?> changeStatus(@PathVariable("videoId") String videoId,
+    public ResponseEntity<?> changeStatus(@PathVariable("videoId") Integer videoId,
                                           HttpServletRequest request) {
         log.info("/public/status/{channelId} {}", videoId);
         return ResponseEntity.ok(videoService.changeStatus(videoId, JwtUtil.getIdFromHeader(request)));
     }
-
-    /**
-     * ADMIN
-     */
 
     @ApiOperation(value = "List", notes = "Method used for get list of videos",
             authorizations = @Authorization(value = "JWT Token"))

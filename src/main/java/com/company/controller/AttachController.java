@@ -25,10 +25,6 @@ public class AttachController {
 
     private final AttachService attachService;
 
-    /**
-     * PUBLIC
-     */
-
     @ApiOperation(value = "Upload", notes = "Method used for upload files")
     @PostMapping("/upload")
     public ResponseEntity<?> upload(@RequestParam MultipartFile file) {
@@ -38,21 +34,17 @@ public class AttachController {
 
     @ApiOperation(value = "Open", notes = "Method used for open files")
     @GetMapping(value = "/open/{id}", produces = MediaType.ALL_VALUE)
-    public byte[] open(@PathVariable("id") String id) {
+    public byte[] open(@PathVariable("id") Integer id) {
         log.info("/open/{id} {}", id);
         return attachService.open(id);
     }
 
     @ApiOperation(value = "Download", notes = "Method used for download files")
     @GetMapping("/download/{id}")
-    public ResponseEntity<?> download(@PathVariable("id") String id) {
+    public ResponseEntity<?> download(@PathVariable("id") Integer id) {
         log.info("/download/{id} {}", id);
         return attachService.download(id);
     }
-
-    /**
-     * ADMIN
-     */
 
     @ApiOperation(value = "List", notes = "Method used for get list of files from database",
             authorizations = @Authorization(value = "JWT Token"))
@@ -68,7 +60,7 @@ public class AttachController {
     @ApiOperation(value = "Delete", notes = "Method used for delete files from local and database",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/adm/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") String id, HttpServletRequest request) {
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id, HttpServletRequest request) {
         log.info("DELETE {}", id);
         JwtUtil.getIdFromHeader(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(attachService.delete(id));

@@ -34,7 +34,7 @@ public class ProfileDTO extends BaseDTO {
     @Size(min = 8, message = "Password length must be between 8 or greater than")
     private String password;
 
-    private String attachId;
+    private Integer attachId;
 
     private String status;
 

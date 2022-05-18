@@ -12,7 +12,7 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProfileJwtDTO {
 
-    private String id;
+    private Integer id;
 
     private ProfileRole role;
 

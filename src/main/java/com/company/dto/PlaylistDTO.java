@@ -29,7 +29,7 @@ public class PlaylistDTO extends BaseDTO {
     @Positive(message = "Invalid OrderNum")
     private Integer orderNum;
 
-    private String channelId;
+    private Integer channelId;
     private ChannelDTO channel;
 
     private Integer videoCount;

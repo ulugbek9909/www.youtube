@@ -23,15 +23,15 @@ public class ChannelDTO extends BaseDTO {
     @NotNull(message = "Description not be null")
     private String description;
 
-    private String photoId;
+    private Integer photoId;
     private AttachDTO photo;
 
     private ChannelStatus status;
 
-    private String bannerId;
+    private Integer bannerId;
     private AttachDTO banner;
 
-    private String profileId;
+    private Integer profileId;
     private ProfileDTO profile;
 
     private String url;

@@ -1,5 +1,5 @@
 package com.company.enums;
 
 public enum ChannelStatus {
-    ACTIVE, BLOCK;
+    ACTIVE, BLOCK
 }

@@ -26,13 +26,10 @@ public class ChannelController {
 
     private final ChannelService channelService;
 
-    /**
-     * PUBLIC
-     */
 
     @ApiOperation(value = "Get", notes = "Method used for get channel info")
     @GetMapping("/{channelId}")
-    public ResponseEntity<?> get(@PathVariable("channelId") String channelId) {
+    public ResponseEntity<?> get(@PathVariable("channelId") Integer channelId) {
         log.info("/{channelId} {}", channelId);
         return ResponseEntity.ok(channelService.get(channelId));
     }
@@ -50,7 +47,7 @@ public class ChannelController {
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/{channelId}")
     public ResponseEntity<?> updateAbout(@RequestBody @Valid ChannelAboutDTO dto,
-                                         @PathVariable("channelId") String channelId,
+                                         @PathVariable("channelId") Integer channelId,
                                          HttpServletRequest request) {
         log.info("UPDATE about {}", dto);
         return ResponseEntity.ok(channelService.updateAbout(dto, channelId, JwtUtil.getIdFromHeader(request)));
@@ -60,7 +57,7 @@ public class ChannelController {
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/image/{channelId}")
     public ResponseEntity<?> channelImage(@RequestBody @Valid AttachDTO dto,
-                                          @PathVariable("channelId") String channelId,
+                                          @PathVariable("channelId") Integer channelId,
                                           HttpServletRequest request) {
         log.info("/public/image/{channelId} {}", dto);
         return ResponseEntity.ok(channelService.channelImage(dto.getId(), channelId, JwtUtil.getIdFromHeader(request)));
@@ -70,7 +67,7 @@ public class ChannelController {
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/banner/{channelId}")
     public ResponseEntity<?> channelBanner(@RequestBody @Valid AttachDTO dto,
-                                           @PathVariable("channelId") String channelId,
+                                           @PathVariable("channelId") Integer channelId,
                                            HttpServletRequest request) {
         log.info("/public/banner/{channelId} {}", dto);
         return ResponseEntity.ok(channelService.channelBanner(dto.getId(), channelId, JwtUtil.getIdFromHeader(request)));
@@ -86,28 +83,20 @@ public class ChannelController {
     @ApiOperation(value = "Delete", notes = "Method used for delete channel only owner delete own channels",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/public/{channelId}/delete")
-    public ResponseEntity<?> delete(@PathVariable("channelId") String channelId,
+    public ResponseEntity<?> delete(@PathVariable("channelId") Integer channelId,
                                     HttpServletRequest request) {
         log.info("/public/{channelId}/delete {}", channelId);
         return ResponseEntity.ok(channelService.delete(channelId, JwtUtil.getIdFromHeader(request)));
     }
 
-    /**
-     * ADMIN AND USER(OWNER)
-     */
-
     @ApiOperation(value = "Change Status", notes = "Method used for change channel's status with admin or owner",
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/public/status/{channelId}")
-    public ResponseEntity<?> changeStatus(@PathVariable("channelId") String channelId,
+    public ResponseEntity<?> changeStatus(@PathVariable("channelId") Integer channelId,
                                           HttpServletRequest request) {
         log.info("/public/status/{channelId} {}", channelId);
         return ResponseEntity.ok(channelService.changeStatus(channelId, JwtUtil.getIdFromHeader(request)));
     }
-
-    /**
-     * ADMIN
-     */
 
     @ApiOperation(value = "List", notes = "Method used for get list of channels",
             authorizations = @Authorization(value = "JWT Token"))

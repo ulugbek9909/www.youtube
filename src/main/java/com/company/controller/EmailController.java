@@ -23,10 +23,6 @@ public class EmailController {
 
     private final EmailService emailService;
 
-    /**
-     * ADMIN
-     */
-
     @Deprecated
     @ApiOperation(value = "List", notes = "Method used for get list of email's history",
             authorizations = @Authorization(value = "JWT Token"))
@@ -43,7 +39,7 @@ public class EmailController {
     @ApiOperation(value = "Delete", notes = "Method used for delete email history",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/adm/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") String id, HttpServletRequest request) {
+    public ResponseEntity<?> delete(@PathVariable("id") Integer id, HttpServletRequest request) {
         log.info("DELETE {}", id);
         JwtUtil.getIdFromHeader(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(emailService.delete(id));

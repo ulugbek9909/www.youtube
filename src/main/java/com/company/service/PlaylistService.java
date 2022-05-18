@@ -39,10 +39,10 @@ public class PlaylistService {
     private final VideoService videoService;
 
 
-    public PlaylistDTO create(PlaylistDTO dto, String channelId, String profileId) {
+    public PlaylistDTO create(PlaylistDTO dto, Integer channelId, Integer profileId) {
         ChannelEntity channelEntity = channelService.getById(channelId);
 
-        if (!channelEntity.getProfileId().toString().equals(profileId)) {
+        if (!channelEntity.getProfileId().equals(profileId)) {
             log.warn("Not access {}", profileId);
             throw new AppForbiddenException("Not access!");
         }
@@ -63,10 +63,10 @@ public class PlaylistService {
         return toFullDTO(entity);
     }
 
-    public PlaylistDTO updateAbout(PlaylistAboutDTO dto, String playlistId, String profileId) {
+    public PlaylistDTO updateAbout(PlaylistAboutDTO dto, Integer playlistId, Integer profileId) {
         PlaylistEntity entity = getById(playlistId);
 
-        if (!entity.getChannel().getProfileId().toString().equals(profileId)) {
+        if (!entity.getChannel().getProfileId().equals(profileId)) {
             log.warn("Not access {}", profileId);
             throw new AppForbiddenException("Not access!");
         }
@@ -91,27 +91,21 @@ public class PlaylistService {
 
         Page<PlaylistEntity> entityPage = playlistRepository.findAll(pageable);
 
-        entityPage.forEach(entity -> {
-            dtoList.add(toFullDTO(entity));
-        });
+        entityPage.forEach(entity -> dtoList.add(toFullDTO(entity)));
         return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
     }
 
-    public Boolean changeStatus(String playlistId, String profileId) {
+    public Boolean changeStatus(Integer playlistId, Integer profileId) {
         PlaylistEntity entity = getById(playlistId);
 
         ProfileEntity profileEntity = profileService.getById(profileId);
 
-        if (entity.getChannel().getProfileId().toString().equals(profileId) ||
+        if (entity.getChannel().getProfileId().equals(profileId) ||
                 profileEntity.getRole().equals(ProfileRole.ADMIN)) {
 
             switch (entity.getStatus()) {
-                case PUBLIC -> {
-                    playlistRepository.updateStatus(PlaylistStatus.PRIVATE, entity.getId());
-                }
-                case PRIVATE -> {
-                    playlistRepository.updateStatus(PlaylistStatus.PUBLIC, entity.getId());
-                }
+                case PUBLIC -> playlistRepository.updateStatus(PlaylistStatus.PRIVATE, entity.getId());
+                case PRIVATE -> playlistRepository.updateStatus(PlaylistStatus.PUBLIC, entity.getId());
             }
 
             return true;
@@ -120,7 +114,7 @@ public class PlaylistService {
         throw new AppForbiddenException("Not access!");
     }
 
-    public List<PlaylistDTO> channelPlaylist(String channelId) {
+    public List<PlaylistDTO> channelPlaylist(Integer channelId) {
         ChannelEntity channelEntity = channelService.getById(channelId);
 
         List<PlaylistDTO> dtoList = new ArrayList<>();
@@ -129,13 +123,11 @@ public class PlaylistService {
                 PlaylistStatus.PUBLIC,
                 Sort.by(Sort.Direction.DESC, "orderNum"));
 
-        entityList.forEach(entity -> {
-            dtoList.add(toShortDTO(entity));
-        });
+        entityList.forEach(entity -> dtoList.add(toShortDTO(entity)));
         return dtoList;
     }
 
-    public List<PlaylistDTO> profilePlaylist(String profileId) {
+    public List<PlaylistDTO> profilePlaylist(Integer profileId) {
         ProfileEntity profileEntity = profileService.getById(profileId);
 
         List<PlaylistDTO> dtoList = new ArrayList<>();
@@ -143,16 +135,14 @@ public class PlaylistService {
         List<PlaylistEntity> entityList = playlistRepository.findAllByProfileId(profileEntity.getId(),
                 Sort.by(Sort.Direction.DESC, "orderNum"));
 
-        entityList.forEach(entity -> {
-            dtoList.add(toShortDTO(entity));
-        });
+        entityList.forEach(entity -> dtoList.add(toShortDTO(entity)));
         return dtoList;
     }
 
-    public Boolean delete(String playlistId, String profileId) {
+    public Boolean delete(Integer playlistId, Integer profileId) {
         PlaylistEntity entity = getById(playlistId);
 
-        if (!entity.getChannel().getProfileId().toString().equals(profileId)) {
+        if (!entity.getChannel().getProfileId().equals(profileId)) {
             log.warn("Not access {}", profileId);
             throw new AppForbiddenException("Not access!");
         }
@@ -162,13 +152,13 @@ public class PlaylistService {
         return true;
     }
 
-    public PlaylistDTO get(String playlistId) {
+    public PlaylistDTO get(Integer playlistId) {
         PlaylistEntity entity = getById(playlistId);
         return toFullDTO(entity);
     }
 
-    public PlaylistEntity getById(String id) {
-        return playlistRepository.findById(UUID.fromString(id))
+    public PlaylistEntity getById(Integer id) {
+        return playlistRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Not found {}", id);
                     throw new ItemNotFoundException("Not found!");
@@ -177,7 +167,7 @@ public class PlaylistService {
 
     public PlaylistDTO toShortDTO(PlaylistEntity entity) {
         PlaylistDTO dto = new PlaylistDTO();
-        dto.setId(entity.getId().toString());
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
 
         ChannelDTO ChannelDTO = new ChannelDTO(channelService.toOpenUrl(entity.getChannelId().toString()));
@@ -190,7 +180,7 @@ public class PlaylistService {
                 .stream()
                 .map(playlistVideoEntity -> {
                     VideoDTO videoDTO = new VideoDTO();
-                    videoDTO.setId(playlistVideoEntity.getVideoId().toString());
+                    videoDTO.setId(playlistVideoEntity.getVideoId());
                     videoDTO.setTitle(playlistVideoEntity.getVideo().getTitle());
                     videoDTO.setUrl(videoService.toOpenUrl(playlistVideoEntity.getVideoId().toString()));
                     videoDTO.setDuration(playlistVideoEntity.getVideo().getDuration());
@@ -204,7 +194,7 @@ public class PlaylistService {
 
     public PlaylistDTO toFullDTO(PlaylistEntity entity) {
         PlaylistDTO dto = new PlaylistDTO();
-        dto.setId(entity.getId().toString());
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
 

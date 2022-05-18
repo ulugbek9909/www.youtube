@@ -7,7 +7,6 @@ import com.company.exception.ItemNotFoundException;
 import com.company.repository.AttachRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -26,7 +25,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -52,7 +51,7 @@ public class AttachService {
         }
 
         try {
-            String extension = getExtension(file.getOriginalFilename());
+            String extension = getExtension(Objects.requireNonNull(file.getOriginalFilename()));
 
             byte[] bytes = file.getBytes();
 
@@ -65,7 +64,7 @@ public class AttachService {
             return toDTO(entity);
         } catch (IOException | RuntimeException e) {
             log.warn("Cannot Upload");
-            delete(entity.getId().toString());
+            delete(entity.getId());
             throw new AppBadRequestException(e.getMessage());
         }
     }
@@ -76,14 +75,12 @@ public class AttachService {
         List<AttachDTO> dtoList = new ArrayList<>();
 
         Page<AttachEntity> entityPage = attachRepository.findAll(pageable);
-        entityPage.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
+        entityPage.forEach(entity -> dtoList.add(toDTO(entity)));
 
         return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
     }
 
-    public byte[] open(String id) {
+    public byte[] open(Integer id) {
         byte[] data;
 
         AttachEntity entity = getById(id);
@@ -99,7 +96,7 @@ public class AttachService {
         }
     }
 
-    public ResponseEntity<?> download(String id) {
+    public ResponseEntity<?> download(Integer id) {
         try {
             AttachEntity entity = getById(id);
             String path = entity.getPath() + "/" + id + "." + entity.getExtension();
@@ -122,7 +119,7 @@ public class AttachService {
         }
     }
 
-    public Boolean delete(String id) {
+    public Boolean delete(Integer id) {
         AttachEntity entity = getById(id);
 
         File file = new File(attachFolder + "/" + entity.getPath() +
@@ -138,8 +135,8 @@ public class AttachService {
         }
     }
 
-    public AttachEntity getById(String id) {
-        return attachRepository.findById(UUID.fromString(id)).orElseThrow(() -> {
+    public AttachEntity getById(Integer id) {
+        return attachRepository.findById(id).orElseThrow(() -> {
             log.warn("Not found {}", id);
             return new ItemNotFoundException("Not found!");
         });
@@ -147,7 +144,7 @@ public class AttachService {
 
     public AttachDTO toDTO(AttachEntity entity) {
         AttachDTO dto = new AttachDTO();
-        dto.setId(entity.getId().toString());
+        dto.setId(entity.getId());
         dto.setPath(entity.getPath());
         dto.setOriginalName(entity.getOriginalName());
         dto.setUrl(domainName + "attach/download/" + entity.getId());

@@ -3,11 +3,8 @@ package com.company.entity;
 import com.company.enums.ChannelStatus;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "channel")
@@ -19,7 +16,7 @@ public class ChannelEntity extends BaseEntity{
     private String name;
 
     @Column(name = "photo_id")
-    private UUID photoId;
+    private Integer photoId;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "photo_id", insertable = false, updatable = false)
     private AttachEntity photo;
@@ -32,13 +29,13 @@ public class ChannelEntity extends BaseEntity{
     private ChannelStatus status;
 
     @Column(name = "banner_id")
-    private UUID bannerId;
+    private Integer bannerId;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "banner_id", insertable = false, updatable = false)
     private AttachEntity banner;
 
     @Column(name = "profile_id", nullable = false)
-    private UUID profileId;
+    private Integer profileId;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id", insertable = false, updatable = false)
     private ProfileEntity profile;

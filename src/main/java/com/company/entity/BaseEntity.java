@@ -3,11 +3,9 @@ package com.company.entity;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @MappedSuperclass
 @Getter
@@ -17,7 +15,7 @@ public class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
-    protected UUID id;
+    protected Integer id;
 
     @Column(name = "created_date")
     @CreationTimestamp

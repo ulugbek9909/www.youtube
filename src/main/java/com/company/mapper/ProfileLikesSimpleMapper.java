@@ -4,7 +4,7 @@ import com.company.enums.LikeType;
 
 public interface ProfileLikesSimpleMapper {
 
-    String getProfile_id();
+    Integer getProfile_id();
 
     LikeType getType();
 

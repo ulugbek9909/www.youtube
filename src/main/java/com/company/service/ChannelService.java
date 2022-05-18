@@ -37,12 +37,12 @@ public class ChannelService {
     private String domainName;
 
 
-    public ChannelDTO create(ChannelDTO dto, String profileId) {
+    public ChannelDTO create(ChannelDTO dto, Integer profileId) {
         ChannelEntity entity = new ChannelEntity();
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
         entity.setStatus(ChannelStatus.ACTIVE);
-        entity.setProfileId(UUID.fromString(profileId));
+        entity.setProfileId(profileId);
 
         try {
             channelRepository.save(entity);
@@ -53,10 +53,10 @@ public class ChannelService {
         return toDTO(entity);
     }
 
-    public ChannelDTO updateAbout(ChannelAboutDTO dto, String channelId, String profileId) {
+    public ChannelDTO updateAbout(ChannelAboutDTO dto, Integer channelId, Integer profileId) {
         ChannelEntity entity = getById(channelId);
 
-        if (!entity.getProfileId().toString().equals(profileId)) {
+        if (!entity.getProfileId().equals(profileId)) {
             log.warn("Not access {}", profileId);
             throw new AppForbiddenException("Not access!");
         }
@@ -72,50 +72,50 @@ public class ChannelService {
         return toDTO(entity);
     }
 
-    public Boolean channelImage(String attachId, String channelId, String profileId) {
+    public Boolean channelImage(Integer attachId, Integer channelId, Integer profileId) {
         AttachEntity attachEntity = attachService.getById(attachId);
 
         ChannelEntity entity = getById(channelId);
 
-        if (!entity.getProfileId().toString().equals(profileId)) {
+        if (!entity.getProfileId().equals(profileId)) {
             log.warn("Not access {}", profileId);
             throw new AppForbiddenException("Not access!");
         }
 
         if (Optional.ofNullable(entity.getPhotoId()).isPresent()) {
-            if (entity.getPhotoId().toString().equals(attachId)) {
+            if (entity.getPhotoId().equals(attachId)) {
                 return true;
             }
-            String oldAttach = entity.getPhotoId().toString();
-            channelRepository.updatePhoto(UUID.fromString(attachId), UUID.fromString(channelId));
+            Integer oldAttach = entity.getPhotoId();
+            channelRepository.updatePhoto(attachId, channelId);
             attachService.delete(oldAttach);
             return true;
         }
-        channelRepository.updatePhoto(UUID.fromString(attachId), UUID.fromString(channelId));
+        channelRepository.updatePhoto(attachId, channelId);
         return true;
     }
 
 
-    public Boolean channelBanner(String attachId, String channelId, String profileId) {
+    public Boolean channelBanner(Integer attachId, Integer channelId, Integer profileId) {
         AttachEntity attachEntity = attachService.getById(attachId);
 
         ChannelEntity entity = getById(channelId);
 
-        if (!entity.getProfileId().toString().equals(profileId)) {
+        if (!entity.getProfileId().equals(profileId)) {
             log.warn("Not access {}", profileId);
             throw new AppForbiddenException("Not access!");
         }
 
         if (Optional.ofNullable(entity.getBannerId()).isPresent()) {
-            if (entity.getBannerId().toString().equals(attachId)) {
+            if (entity.getBannerId().equals(attachId)) {
                 return true;
             }
-            String oldAttach = entity.getBannerId().toString();
-            channelRepository.updateBanner(UUID.fromString(attachId), UUID.fromString(channelId));
+            Integer oldAttach = entity.getBannerId();
+            channelRepository.updateBanner(attachId, channelId);
             attachService.delete(oldAttach);
             return true;
         }
-        channelRepository.updateBanner(UUID.fromString(attachId), UUID.fromString(channelId));
+        channelRepository.updateBanner(attachId, channelId);
         return true;
     }
 
@@ -126,25 +126,19 @@ public class ChannelService {
 
         Page<ChannelEntity> entityPage = channelRepository.findAll(pageable);
 
-        entityPage.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
+        entityPage.forEach(entity -> dtoList.add(toDTO(entity)));
         return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
     }
 
-    public Boolean changeStatus(String channelId, String profileId) {
+    public Boolean changeStatus(Integer channelId, Integer profileId) {
         ChannelEntity entity = getById(channelId);
 
         ProfileEntity profileEntity = profileService.getById(profileId);
 
-        if (entity.getProfileId().toString().equals(profileId) || profileEntity.getRole().equals(ProfileRole.ADMIN)) {
+        if (entity.getProfileId().equals(profileId) || profileEntity.getRole().equals(ProfileRole.ADMIN)) {
             switch (entity.getStatus()) {
-                case ACTIVE -> {
-                    channelRepository.updateStatus(ChannelStatus.BLOCK, entity.getId());
-                }
-                case BLOCK -> {
-                    channelRepository.updateStatus(ChannelStatus.ACTIVE, entity.getId());
-                }
+                case ACTIVE -> channelRepository.updateStatus(ChannelStatus.BLOCK, entity.getId());
+                case BLOCK -> channelRepository.updateStatus(ChannelStatus.ACTIVE, entity.getId());
             }
 
             return true;
@@ -153,7 +147,7 @@ public class ChannelService {
         throw new AppForbiddenException("Not access!");
     }
 
-    public List<ChannelDTO> profileChannelList(String profileId) {
+    public List<ChannelDTO> profileChannelList(Integer profileId) {
         ProfileEntity profileEntity = profileService.getById(profileId);
 
         List<ChannelDTO> dtoList = new ArrayList<>();
@@ -161,35 +155,33 @@ public class ChannelService {
         List<ChannelEntity> entityList = channelRepository.findAllByProfileId(profileEntity.getId(),
                 Sort.by(Sort.Direction.ASC, "name"));
 
-        entityList.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
+        entityList.forEach(entity -> dtoList.add(toDTO(entity)));
         return dtoList;
     }
 
-    public Boolean delete(String channelId, String profileId) {
+    public Boolean delete(Integer channelId, Integer profileId) {
         ChannelEntity entity = getById(channelId);
 
-        if (!entity.getProfileId().toString().equals(profileId)) {
+        if (!entity.getProfileId().equals(profileId)) {
             log.warn("Not access {}", profileId);
             throw new AppForbiddenException("Not access!");
         }
 
         channelRepository.delete(entity);
 
-        attachService.delete(entity.getBannerId().toString());
-        attachService.delete(entity.getPhotoId().toString());
+        attachService.delete(entity.getBannerId());
+        attachService.delete(entity.getPhotoId());
 
         return true;
     }
 
-    public ChannelDTO get(String id) {
+    public ChannelDTO get(Integer id) {
         ChannelEntity entity = getById(id);
         return toDTO(entity);
     }
 
-    public ChannelEntity getById(String id) {
-        return channelRepository.findById(UUID.fromString(id))
+    public ChannelEntity getById(Integer id) {
+        return channelRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Not found {}", id);
                     throw new ItemNotFoundException("Not found!");
@@ -198,7 +190,7 @@ public class ChannelService {
 
     public ChannelDTO toDTO(ChannelEntity entity) {
         ChannelDTO dto = new ChannelDTO();
-        dto.setId(entity.getId().toString());
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
         if (Optional.ofNullable(entity.getPhotoId()).isPresent()) {
@@ -209,7 +201,7 @@ public class ChannelService {
             AttachDTO attachDTO = new AttachDTO(attachService.toOpenUrl(entity.getBannerId().toString()));
             dto.setBanner(attachDTO);
         }
-        ProfileDTO profileDTO = new ProfileDTO(profileService.toOpenUrl(entity.getProfileId().toString()));
+        ProfileDTO profileDTO = new ProfileDTO(profileService.toOpenUrl(entity.getProfileId()));
         dto.setProfile(profileDTO);
 
         dto.setStatus(entity.getStatus());

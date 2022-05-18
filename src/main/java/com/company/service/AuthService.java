@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -113,8 +112,8 @@ public class AuthService {
         return "Confirm your email address.\nCheck your email!";
     }
 
-    public String verification(String id) {
-        if (profileRepository.updateStatus(ProfileStatus.ACTIVE, UUID.fromString(id)) > 0) {
+    public String verification(Integer id) {
+        if (profileRepository.updateStatus(ProfileStatus.ACTIVE, id) > 0) {
             return "Successfully verified";
         }
         log.warn("Unsuccessfully verified {}", id);
@@ -125,7 +124,7 @@ public class AuthService {
         StringBuilder builder = new StringBuilder();
         builder.append("<h2>Hellomaleykum ").append(entity.getName()).append(" ").append(entity.getSurname()).append("!</h2>");
         builder.append("<br><p><b>To verify your registration click to next link -> ");
-        builder.append("<a href=\"" + domainName + domainPath);
+        builder.append("<a href=\"").append(domainName).append(domainPath);
         switch (type) {
             case VERIFICATION -> builder.append(JwtUtil.encode(entity.getId().toString()));
             case RESET -> builder.append(JwtUtil.encodeEmail(entity.getId().toString(), entity.getEmail(), entity.getRole()));

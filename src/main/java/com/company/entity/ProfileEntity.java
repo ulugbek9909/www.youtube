@@ -4,11 +4,8 @@ import com.company.enums.ProfileRole;
 import com.company.enums.ProfileStatus;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "profile")
@@ -29,7 +26,7 @@ public class ProfileEntity extends BaseEntity{
     private String password;
 
     @Column(name = "attach_id")
-    private UUID attachId;
+    private Integer attachId;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attach_id", insertable = false, updatable = false)
     private AttachEntity attach;

@@ -1,14 +1,12 @@
 package com.company.dto;
 
-import javax.validation.constraints.NotBlank;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.company.annotation.ValidEmail;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
