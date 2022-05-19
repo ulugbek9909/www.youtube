@@ -24,10 +24,14 @@ public class VideoLikeController {
 
     private final VideoLikeService videoLikeService;
 
+    /**
+     * PUBLIC
+     */
+
     @ApiOperation(value = "Get", notes = "Method used for get video's like by profile",
             authorizations = @Authorization(value = "JWT Token"))
     @GetMapping("/public/{videoId}")
-    public ResponseEntity<?> get(@PathVariable("videoId") Integer videoId,
+    public ResponseEntity<?> get(@PathVariable("videoId") String videoId,
                                  HttpServletRequest request) {
         log.info("/public/{videoId} {}", videoId);
         return ResponseEntity.ok(videoLikeService.get(videoId, JwtUtil.getIdFromHeader(request)));
@@ -45,7 +49,7 @@ public class VideoLikeController {
     @ApiOperation(value = "Delete", notes = "Method used for delete like from video only owner delete own like",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/public/{likeId}/delete")
-    public ResponseEntity<?> delete(@PathVariable("likeId") Integer likeId,
+    public ResponseEntity<?> delete(@PathVariable("likeId") String likeId,
                                     HttpServletRequest request) {
         log.info("/public/{likeId}/delete {}", likeId);
         return ResponseEntity.ok(videoLikeService.delete(likeId, JwtUtil.getIdFromHeader(request)));
@@ -60,12 +64,17 @@ public class VideoLikeController {
         return ResponseEntity.ok(videoLikeService.getByProfileLikedVideo(page, size, JwtUtil.getIdFromHeader(request)));
     }
 
+
+    /**
+     * ADMIN
+     */
+
     @ApiOperation(value = "Liked Videos by Profile", notes = "Method used for get liked videos by profile",
             authorizations = @Authorization(value = "JWT Token"))
     @GetMapping("/adm/list/{profileId}")
     public ResponseEntity<?> getByProfileLikedVideo(@RequestParam(value = "page", defaultValue = "0") int page,
                                         @RequestParam(value = "size", defaultValue = "5") int size,
-                                        @PathVariable("profileId") Integer profileId,
+                                        @PathVariable("profileId") String profileId,
                                         HttpServletRequest request) {
         log.info("LIST page={} size={}", page, size);
         JwtUtil.getIdFromHeader(request, ProfileRole.ADMIN);

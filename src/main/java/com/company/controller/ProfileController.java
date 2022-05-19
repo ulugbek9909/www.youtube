@@ -24,9 +24,14 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
+
+    /**
+     * PUBLIC
+     */
+
     @ApiOperation(value = "Get", notes = "Method used for get profile info")
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable("id") Integer id) {
+    public ResponseEntity<?> get(@PathVariable("id") String id) {
         log.info("/{id} {}", id);
         return ResponseEntity.ok(profileService.get(id));
     }
@@ -37,7 +42,7 @@ public class ProfileController {
     public ResponseEntity<?> updateBio(@RequestBody @Valid ProfileBioDTO dto,
                                        HttpServletRequest request) {
         log.info("Update Bio {}", dto);
-        Integer id = JwtUtil.getIdFromHeader(request);
+        String id = JwtUtil.getIdFromHeader(request);
         return ResponseEntity.ok(profileService.updateBio(id, dto));
     }
 
@@ -76,6 +81,10 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.changePassword(dto, JwtUtil.getIdFromHeader(request)));
     }
 
+    /**
+     * ADMIN
+     */
+
     @ApiOperation(value = "Create", notes = "Method used for create profile",
             authorizations = @Authorization(value = "JWT Token"))
     @PostMapping("/adm")
@@ -100,7 +109,7 @@ public class ProfileController {
     @ApiOperation(value = "Delete", notes = "Method used for delete profile",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/adm/{id}/delete")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer id,
+    public ResponseEntity<?> delete(@PathVariable("id") String id,
                                     HttpServletRequest request) {
         log.info("DELETE {}", id);
         JwtUtil.getIdFromHeader(request, ProfileRole.ADMIN);

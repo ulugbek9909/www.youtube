@@ -1,6 +1,7 @@
 package com.company.config;
 
 import com.company.dto.ProfileJwtDTO;
+import com.company.exception.AppBadRequestException;
 import com.company.util.JwtUtil;
 import io.jsonwebtoken.JwtException;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,9 @@ public class JwtFilter extends GenericFilterBean {
             ProfileJwtDTO dto = JwtUtil.decode(jwtArray[1]);
             request.setAttribute("profileJwtDTO", dto);
         } catch (JwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        } catch (AppBadRequestException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

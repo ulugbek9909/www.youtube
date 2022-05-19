@@ -14,9 +14,9 @@ import javax.validation.constraints.NotBlank;
 public class PlaylistVideoIdDTO {
 
     @NotBlank(message = "VideoId required")
-    private Integer videoId;
+    private String videoId;
 
     @NotBlank(message = "PlaylistId required")
-    private Integer playlistId;
+    private String playlistId;
 
 }

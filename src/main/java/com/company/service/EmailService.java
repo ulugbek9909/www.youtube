@@ -8,6 +8,7 @@ import com.company.exception.ItemNotFoundException;
 import com.company.repository.EmailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,6 +19,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -43,8 +45,12 @@ public class EmailService {
             EmailEntity entity = new EmailEntity();
             entity.setToEmail(toEmail);
             switch (type) {
-                case VERIFICATION -> entity.setType(EmailType.VERIFICATION);
-                case RESET -> entity.setType(EmailType.RESET);
+                case VERIFICATION -> {
+                    entity.setType(EmailType.VERIFICATION);
+                }
+                case RESET -> {
+                    entity.setType(EmailType.RESET);
+                }
             }
             emailRepository.save(entity);
         } catch (MessagingException | MailException e) {
@@ -58,13 +64,15 @@ public class EmailService {
 
         List<EmailDTO> dtoList = new ArrayList<>();
         Page<EmailEntity> entityPage = emailRepository.findAll(pageable);
-        entityPage.forEach(entity -> dtoList.add(toDTO(entity)));
+        entityPage.forEach(entity -> {
+            dtoList.add(toDTO(entity));
+        });
 
         return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
     }
 
-    public Boolean delete(Integer id) {
-        EmailEntity entity = emailRepository.findById(id).orElseThrow(() -> {
+    public Boolean delete(String id) {
+        EmailEntity entity = emailRepository.findById(UUID.fromString(id)).orElseThrow(() -> {
             log.warn("Not found {}", id);
             return new ItemNotFoundException("Not found!");
         });
@@ -75,7 +83,7 @@ public class EmailService {
 
     private EmailDTO toDTO(EmailEntity entity) {
         EmailDTO dto = new EmailDTO();
-        dto.setId(entity.getId());
+        dto.setId(entity.getId().toString());
         dto.setToEmail(entity.getToEmail());
         dto.setType(entity.getType());
         dto.setCreatedDate(entity.getCreatedDate());

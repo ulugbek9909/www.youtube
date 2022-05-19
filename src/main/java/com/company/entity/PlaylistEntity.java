@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "playlist")
@@ -26,7 +27,7 @@ public class PlaylistEntity extends BaseEntity {
     private Integer orderNum;
 
     @Column(name = "channel_id", nullable = false)
-    private Integer channelId;
+    private UUID channelId;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id", insertable = false, updatable = false)
     private ChannelEntity channel;

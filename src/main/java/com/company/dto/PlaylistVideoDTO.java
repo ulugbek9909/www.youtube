@@ -16,11 +16,11 @@ import javax.validation.constraints.Positive;
 public class PlaylistVideoDTO extends BaseDTO {
 
     @NotBlank(message = "VideoId required")
-    private Integer videoId;
+    private String videoId;
     private VideoDTO video;
 
     @NotBlank(message = "PlaylistId required")
-    private Integer playlistId;
+    private String playlistId;
     private PlaylistDTO playlist;
 
     @NotNull(message = "OrderNum required")

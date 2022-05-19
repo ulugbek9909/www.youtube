@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BaseDTO {
 
-    protected Integer id;
+    protected String id;
 
     protected LocalDateTime createdDate;
 

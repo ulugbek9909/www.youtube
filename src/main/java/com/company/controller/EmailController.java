@@ -6,6 +6,7 @@ import com.company.util.JwtUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
+import io.swagger.annotations.SwaggerDefinition;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 public class EmailController {
 
     private final EmailService emailService;
+
+    /**
+     * ADMIN
+     */
 
     @Deprecated
     @ApiOperation(value = "List", notes = "Method used for get list of email's history",
@@ -38,7 +43,7 @@ public class EmailController {
     @ApiOperation(value = "Delete", notes = "Method used for delete email history",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/adm/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer id, HttpServletRequest request) {
+    public ResponseEntity<?> delete(@PathVariable("id") String id, HttpServletRequest request) {
         log.info("DELETE {}", id);
         JwtUtil.getIdFromHeader(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(emailService.delete(id));

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "video")
@@ -21,19 +22,19 @@ public class VideoEntity extends BaseEntity {
     private String description;
 
     @Column(name = "category_id", nullable = false)
-    private Integer categoryId;
+    private UUID categoryId;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private CategoryEntity category;
 
     @Column(name = "attach_id", nullable = false)
-    private Integer attachId;
+    private UUID attachId;
 
     @Column(name = "preview_attach_id")
-    private Integer previewAttachId;
+    private UUID previewAttachId;
 
     @Column(name = "channel_id", nullable = false)
-    private Integer channelId;
+    private UUID channelId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id", insertable = false, updatable = false)
     private ChannelEntity channel;

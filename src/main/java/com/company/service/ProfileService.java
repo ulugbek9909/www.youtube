@@ -1,6 +1,7 @@
 package com.company.service;
 
 import com.company.dto.*;
+import com.company.entity.AttachEntity;
 import com.company.entity.ProfileEntity;
 import com.company.enums.EmailType;
 import com.company.enums.ProfileStatus;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -58,12 +60,14 @@ public class ProfileService {
         List<ProfileDTO> dtoList = new ArrayList<>();
 
         Page<ProfileEntity> entityPage = profileRepository.findAll(pageable);
-        entityPage.forEach(entity -> dtoList.add(toDTO(entity)));
+        entityPage.forEach(entity -> {
+            dtoList.add(toDTO(entity));
+        });
 
         return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
     }
 
-    public ProfileDTO updateBio(Integer id, ProfileBioDTO dto) {
+    public ProfileDTO updateBio(String id, ProfileBioDTO dto) {
         ProfileEntity entity = getById(id);
 
         profileRepository.updateBio(dto.getName(), dto.getSurname(), LocalDateTime.now(), entity.getId());
@@ -71,44 +75,46 @@ public class ProfileService {
         return get(id);
     }
 
-    public Boolean delete(Integer id) {
+    public Boolean delete(String id) {
         ProfileEntity entity = getById(id);
         profileRepository.delete(entity);
         return true;
     }
 
-    public Boolean profileImage(Integer attachId, Integer pId) {
-        attachService.getById(attachId);
+    public Boolean profileImage(String attachId, String pId) {
+        AttachEntity attachEntity = attachService.getById(attachId);
 
         ProfileEntity entity = getById(pId);
 
         if (Optional.ofNullable(entity.getAttach()).isPresent()) {
-            if (entity.getAttachId().equals(attachId)) {
+            if (entity.getAttachId().toString().equals(attachId)) {
                 return true;
             }
-            Integer oldAttach = entity.getAttachId();
-            profileRepository.updateAttach(attachId, pId);
+            String oldAttach = entity.getAttachId().toString();
+            profileRepository.updateAttach(UUID.fromString(attachId), UUID.fromString(pId));
             attachService.delete(oldAttach);
             return true;
         }
-        profileRepository.updateAttach(attachId, pId);
+        profileRepository.updateAttach(UUID.fromString(attachId), UUID.fromString(pId));
         return true;
     }
 
-    public String emailReset(ProfileEmailDTO dto, Integer profileId) {
+    public String emailReset(ProfileEmailDTO dto, String profileId) {
         ProfileEntity entity = getById(profileId);
 
         checkEmail(dto.getEmail());
 
         entity.setEmail(dto.getEmail());
 
-        Thread thread = new Thread(() -> authService.sendEmail(entity, "profile/email", EmailType.RESET));
+        Thread thread = new Thread(() -> {
+            authService.sendEmail(entity, "profile/email", EmailType.RESET);
+        });
         thread.start();
 
         return "Confirm your email address.\nCheck your email!";
     }
 
-    public String emailConfirm(Integer profileId, String email) {
+    public String emailConfirm(String profileId, String email) {
         ProfileEntity entity = getById(profileId);
         try {
             profileRepository.updateEmail(email, entity.getId());
@@ -119,7 +125,7 @@ public class ProfileService {
         }
     }
 
-    public String changePassword(ProfilePasswordDTO dto, Integer profileId) {
+    public String changePassword(ProfilePasswordDTO dto, String profileId) {
         ProfileEntity entity = getById(profileId);
 
         if (!entity.getPassword().equals(DigestUtils.md5Hex(dto.getOldPassword()))) {
@@ -139,23 +145,21 @@ public class ProfileService {
         }
     }
 
-    public ProfileEntity getById(Integer id) {
-        return profileRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Not found {}", id);
-                    return new ItemNotFoundException("Not Found!");
-                });
+    public ProfileEntity getById(String id) {
+        return profileRepository.findById(UUID.fromString(id)).orElseThrow(() -> {
+            log.warn("Not found {}", id);
+            return new ItemNotFoundException("Not Found!");
+        });
     }
 
     public void checkEmail(String email) {
-        profileRepository.findByEmail(email)
-                .ifPresent(profileEntity -> {
-                    log.warn("Unique {}", email);
-                    throw new ItemAlreadyExistsException("This Email already used!");
-                });
+        profileRepository.findByEmail(email).ifPresent(profileEntity -> {
+            log.warn("Unique {}", email);
+            throw new ItemAlreadyExistsException("This Email already used!");
+        });
     }
 
-    public ProfileDTO get(Integer id) {
+    public ProfileDTO get(String id) {
         ProfileEntity entity = getById(id);
 
         ProfileDTO dto = new ProfileDTO();
@@ -175,7 +179,7 @@ public class ProfileService {
 
     public ProfileDTO toDTO(ProfileEntity entity) {
         ProfileDTO dto = new ProfileDTO();
-        dto.setId(entity.getId());
+        dto.setId(entity.getId().toString());
         dto.setName(entity.getName());
         dto.setSurname(entity.getSurname());
         dto.setEmail(entity.getEmail());
@@ -192,7 +196,21 @@ public class ProfileService {
         return dto;
     }
 
-    public String toOpenUrl(Integer id) {
+    public ProfileDTO toShortDTO(ProfileEntity entity) {
+        ProfileDTO dto = new ProfileDTO();
+        dto.setId(entity.getId().toString());
+        dto.setName(entity.getName());
+        dto.setSurname(entity.getSurname());
+
+        if (Optional.ofNullable(entity.getAttach()).isPresent()) {
+            AttachDTO attachDTO = new AttachDTO(attachService.toOpenUrl(entity.getAttach().getId().toString()));
+            dto.setImage(attachDTO);
+        }
+
+        return dto;
+    }
+
+    public String toOpenUrl(String id) {
         return domainName + "profile/" + id;
     }
 }

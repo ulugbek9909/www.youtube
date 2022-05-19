@@ -21,8 +21,11 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @Api(tags = "Tag")
 public class TagController {
-
     private final TagService tagService;
+
+    /**
+     * PUBLIC
+     */
 
     @ApiOperation(value = "Create", notes = "Method used for create tag")
     @PostMapping("/public")
@@ -39,10 +42,15 @@ public class TagController {
         return ResponseEntity.ok(tagService.list(page, size));
     }
 
+
+    /**
+     * ADMIN
+     */
+
     @ApiOperation(value = "Update", notes = "Method used for update tag",
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/adm/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Integer id,
+    public ResponseEntity<?> update(@PathVariable("id") String id,
                                     @RequestBody @Valid TagDTO dto,
                                     HttpServletRequest request) {
         log.info("UPDATE {}", dto);
@@ -53,7 +61,7 @@ public class TagController {
     @ApiOperation(value = "Delete", notes = "Method used for delete tag",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/adm/{id}/delete")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer id, HttpServletRequest request) {
+    public ResponseEntity<?> delete(@PathVariable("id") String id, HttpServletRequest request) {
         log.info("DELETE {}", id);
         JwtUtil.getIdFromHeader(request, ProfileRole.ADMIN);
         return ResponseEntity.ok(tagService.delete(id));

@@ -24,9 +24,13 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    /**
+     * PUBLIC
+     */
+
     @ApiOperation(value = "Get", notes = "Method used for get category")
     @GetMapping("/{categoryId}")
-    public ResponseEntity<?> get(@PathVariable("categoryId") Integer categoryId) {
+    public ResponseEntity<?> get(@PathVariable("categoryId") String categoryId) {
         log.info("/{categoryId} {}", categoryId);
         return ResponseEntity.ok(categoryService.get(categoryId));
     }
@@ -38,6 +42,9 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.list());
     }
 
+    /**
+     * ADMIN
+     */
     @ApiOperation(value = "Create", notes = "Method used for create category",
             authorizations = @Authorization(value = "JWT Token"))
     @PostMapping("/adm")
@@ -51,7 +58,7 @@ public class CategoryController {
     @ApiOperation(value = "Update", notes = "Method used for update category",
             authorizations = @Authorization(value = "JWT Token"))
     @PutMapping("/adm/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Integer id,
+    public ResponseEntity<?> update(@PathVariable("id") String id,
                                     @RequestBody @Valid CategoryDTO dto,
                                     HttpServletRequest request) {
         log.info("UPDATE {}", dto);
@@ -62,7 +69,7 @@ public class CategoryController {
     @ApiOperation(value = "Delete", notes = "Method used for delete category",
             authorizations = @Authorization(value = "JWT Token"))
     @DeleteMapping("/adm/{id}/delete")
-    public ResponseEntity<?> delete(@PathVariable("id") Integer id,
+    public ResponseEntity<?> delete(@PathVariable("id") String id,
                                     HttpServletRequest request) {
         log.info("DELETE {}", id);
         JwtUtil.getIdFromHeader(request, ProfileRole.ADMIN);

@@ -7,6 +7,7 @@ import com.company.exception.ItemNotFoundException;
 import com.company.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -48,7 +50,7 @@ public class CategoryService {
         return list;
     }
 
-    public CategoryDTO update(Integer id, CategoryDTO dto) {
+    public CategoryDTO update(String id, CategoryDTO dto) {
         CategoryEntity entity = getById(id);
         entity.setName(dto.getName());
         entity.setUpdatedDate(LocalDateTime.now());
@@ -62,19 +64,19 @@ public class CategoryService {
         return toDTO(entity);
     }
 
-    public Boolean delete(Integer id) {
+    public Boolean delete(String id) {
         CategoryEntity entity = getById(id);
         categoryRepository.delete(entity);
         return true;
     }
 
-    public CategoryDTO get(Integer categoryId) {
+    public CategoryDTO get(String categoryId) {
         CategoryEntity entity = getById(categoryId);
         return toDTO(entity);
     }
 
-    public CategoryEntity getById(Integer id) {
-        return categoryRepository.findById(id)
+    public CategoryEntity getById(String id) {
+        return categoryRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> {
                     log.warn("Not found {}", id);
                     return new ItemNotFoundException("Not Found!");
@@ -83,7 +85,7 @@ public class CategoryService {
 
     public CategoryDTO toDTO(CategoryEntity entity) {
         CategoryDTO dto = new CategoryDTO();
-        dto.setId(entity.getId());
+        dto.setId(entity.getId().toString());
         dto.setName(entity.getName());
         dto.setUpdatedDate(entity.getUpdatedDate());
         dto.setCreatedDate(entity.getCreatedDate());
