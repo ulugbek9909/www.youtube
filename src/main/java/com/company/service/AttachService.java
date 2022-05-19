@@ -47,7 +47,7 @@ public class AttachService {
 
         File folder = new File(attachFolder + "/" + pathFolder);
         if (!folder.exists()) {
-            folder.mkdirs();
+            folder.mkdirs()
         }
 
         try {

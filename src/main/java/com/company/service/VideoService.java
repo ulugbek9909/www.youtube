@@ -161,23 +161,6 @@ public class VideoService {
         return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
     }
 
-    /*public PageImpl<VideoDTO> paginationByTagId(int page, int size, String tagId) {
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "publishedDate"));
-
-        TagEntity tagEntity = tagService.get(tagId);
-
-        List<VideoDTO> dtoList = new ArrayList<>();
-
-        Page<VideoEntity> entityPage = videoRepository.findAllByTagIdAndStatus(tagEntity.getId(),
-                VideoStatus.PUBLIC,
-                pageable);
-
-        entityPage.forEach(entity -> {
-            dtoList.add(toDTO(entity));
-        });
-        return new PageImpl<>(dtoList, pageable, entityPage.getTotalElements());
-    }*/
     public PageImpl<VideoPlaylistDTO> pagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 

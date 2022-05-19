@@ -4,7 +4,6 @@ import com.company.dto.AttachDTO;
 import com.company.dto.ChannelAboutDTO;
 import com.company.dto.ChannelDTO;
 import com.company.dto.ProfileDTO;
-import com.company.entity.AttachEntity;
 import com.company.entity.ChannelEntity;
 import com.company.entity.ProfileEntity;
 import com.company.enums.ChannelStatus;
@@ -21,7 +20,9 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -73,7 +74,7 @@ public class ChannelService {
     }
 
     public Boolean channelImage(Integer attachId, Integer channelId, Integer profileId) {
-        AttachEntity attachEntity = attachService.getById(attachId);
+        attachService.getById(attachId);
 
         ChannelEntity entity = getById(channelId);
 
@@ -97,7 +98,7 @@ public class ChannelService {
 
 
     public Boolean channelBanner(Integer attachId, Integer channelId, Integer profileId) {
-        AttachEntity attachEntity = attachService.getById(attachId);
+        attachService.getById(attachId);
 
         ChannelEntity entity = getById(channelId);
 

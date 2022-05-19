@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Slf4j
 public class JwtUtil {
-    private final static String secretKey = "kalitso'z";
+    private final static String secretKey = "key for jwt";
 
     public static String encode(String id, ProfileRole role) {
         return doEncode(id, null, role, 60);
@@ -105,26 +105,4 @@ public class JwtUtil {
     }
 
 
-    public static ProfileJwtDTO getProfileFromHeader(HttpServletRequest request, ProfileRole... requiredRoles) {
-        try {
-            ProfileJwtDTO dto = (ProfileJwtDTO) request.getAttribute("profileJwtDTO");
-            if (requiredRoles == null || requiredRoles.length == 0) {
-                return dto;
-            }
-            if (Optional.ofNullable(dto.getEmail()).isPresent()) {
-                return dto;
-            }
-            for (ProfileRole role : requiredRoles) {
-                if (role.equals(dto.getRole())) {
-                    return dto;
-                }
-            }
-        } catch (RuntimeException e) {
-            log.warn("Not Authorized");
-            throw new TokenNotValidException("Not Authorized!");
-        }
-        log.warn("Not Access");
-        throw new AppForbiddenException("Not Access!");
-
-    }
 }

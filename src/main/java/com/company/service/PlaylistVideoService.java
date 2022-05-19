@@ -68,7 +68,7 @@ public class PlaylistVideoService {
     }
 
     public Boolean delete(PlaylistVideoIdDTO dto, Integer profileId) {
-        VideoEntity videoEntity = videoService.getById(dto.getVideoId());
+        videoService.getById(dto.getVideoId());
 
         PlaylistEntity playlistEntity = getPlaylistById(dto.getPlaylistId());
 

@@ -1,7 +1,6 @@
 package com.company.service;
 
 import com.company.dto.*;
-import com.company.entity.AttachEntity;
 import com.company.entity.ProfileEntity;
 import com.company.enums.EmailType;
 import com.company.enums.ProfileStatus;
@@ -79,7 +78,7 @@ public class ProfileService {
     }
 
     public Boolean profileImage(Integer attachId, Integer pId) {
-        AttachEntity attachEntity = attachService.getById(attachId);
+        attachService.getById(attachId);
 
         ProfileEntity entity = getById(pId);
 

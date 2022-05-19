@@ -1,7 +1,8 @@
 package com.company.controller;
 
-import com.company.dto.*;
-import com.company.enums.ProfileRole;
+import com.company.dto.PlaylistVideoDTO;
+import com.company.dto.PlaylistVideoIdDTO;
+import com.company.dto.UpdateOrderNumDTO;
 import com.company.service.PlaylistVideoService;
 import com.company.util.JwtUtil;
 import io.swagger.annotations.Api;
